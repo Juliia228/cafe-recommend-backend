@@ -1,10 +1,10 @@
-package ru.hse.diplom.kitchen_assistant_backend;
+package ru.hse.diplom.cafe_recommend_backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class KitchenAssistantBackendApplicationTests {
+class CafeRecommendBackendApplicationTests {
 
 	@Test
 	void contextLoads() {
