@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: cafe-recommend-backend
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url:
+    username:
+    password:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
