@@ -14,6 +14,11 @@ public interface DishRepository extends JpaRepository<Dish, UUID> {
     @Query("SELECT COUNT(*) FROM Dish")
     int getDishesCount();
 
+    @Query("SELECT id " +
+            "FROM Dish " +
+            "ORDER BY id")
+    List<UUID> findAllIds();
+
 //    @Query("")
 //    List<Dish> findPopular();
 

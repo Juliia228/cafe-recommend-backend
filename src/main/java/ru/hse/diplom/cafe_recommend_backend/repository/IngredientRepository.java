@@ -10,8 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface IngredientRepository extends JpaRepository<Ingredient, UUID> {
-//    @Query("SELECT id, intIndex FROM Ingredient")
-//    List<Object[]> findArrayIndexes();
 
     @Query(value = "SELECT i.* " +
             "FROM ingredients i " +
@@ -19,6 +17,27 @@ public interface IngredientRepository extends JpaRepository<Ingredient, UUID> {
             "ON ref.ingredient_id = i.id " +
             "JOIN dishes d " +
             "ON ref.dish_id = d.id " +
-            "WHERE d.id = ?1", nativeQuery = true)
+            "WHERE d.id = :dishId", nativeQuery = true)
     List<Ingredient> findByDishId(UUID dishId);
+
+    @Query(value = "SELECT DISTINCT i.id " +
+            "FROM ingredients i " +
+            "JOIN ref_dishes_ingredients ref " +
+            "ON ref.ingredient_id = i.id " +
+            "JOIN dishes d " +
+            "ON ref.dish_id = d.id " +
+            "WHERE d.id in " +
+            "(SELECT oi.dishId " +
+            "FROM order_info oi " +
+            "JOIN orders o " +
+            "ON o.id = oi.orderId " +
+            "WHERE o.userId = ?1)", nativeQuery = true)
+    List<UUID> findDistinctOrderedIngredientIds();
+//            List<UUID> dishIds);
+
+    @Query("SELECT id " +
+            "FROM Ingredient " +
+            "ORDER BY id")
+    List<UUID> findAllIds();
+
 }

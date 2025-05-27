@@ -3,6 +3,8 @@ package ru.hse.diplom.cafe_recommend_backend.service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.RealVector;
 import org.springframework.stereotype.Service;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.DishDto;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.DishListDto;
@@ -11,7 +13,9 @@ import ru.hse.diplom.cafe_recommend_backend.model.entity.Dish;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.Ingredient;
 import ru.hse.diplom.cafe_recommend_backend.repository.DishRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static ru.hse.diplom.cafe_recommend_backend.model.Constants.DISH_DOES_NOT_EXIST;
@@ -20,6 +24,8 @@ import static ru.hse.diplom.cafe_recommend_backend.model.Constants.DISH_DOES_NOT
 @RequiredArgsConstructor
 public class DishService {
     private final DishRepository dishRepository;
+    private final IngredientService ingredientService;
+    private final OrderService orderService;
 
     public int getDishesCount() {
         return dishRepository.getDishesCount();
@@ -34,6 +40,13 @@ public class DishService {
         return null;
     }
 
+    public List<Dish> getByIds(List<UUID> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        return dishRepository.findByIds(ids);
+    }
+
     public DishListDto getAll(Boolean withIngredients) {
         if (withIngredients) {
 //            List<> dishesWithIngredients = dishRepository.findAllDishesWithIngredients();
@@ -41,6 +54,31 @@ public class DishService {
         }
         List<Dish> dishes = dishRepository.findAll();
         return DishListDto.of(mapToFullDishInfoList(dishes));
+    }
+
+    @Transactional
+    public Map<UUID, Integer> getRatedDishes(UUID userId) {
+        // Оценки: 0 - пользователь не пробовал блюдо, 1 - пробовал
+        List<UUID> orderedDishes = orderService.getOrderedDishesId(userId);
+        List<UUID> allDishes = dishRepository.findAllIds();
+        Map<UUID, Integer> result = new HashMap<>();
+        allDishes.forEach(dishId -> result.put(dishId, orderedDishes.contains(dishId) ? 1 : 0));
+        return result;
+    }
+
+    @Transactional
+    public RealVector getDishVector(UUID dishId) {
+        List<UUID> ingredientIds = dishRepository
+                .findIngredientsByDishId(dishId)
+                .stream()
+                .map(Ingredient::getId)
+                .toList();
+        return ingredientService.getRatedIngredientsVector(ingredientIds);
+    }
+
+    public RealVector getEmptyDishVector() {
+        int dishesCount = getDishesCount();
+        return new ArrayRealVector(dishesCount, 0);
     }
 
     @Transactional
