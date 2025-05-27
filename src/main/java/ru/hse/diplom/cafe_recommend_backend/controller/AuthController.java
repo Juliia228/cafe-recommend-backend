@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.*;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.User;
-import ru.hse.diplom.cafe_recommend_backend.service.RefreshTokenService;
+import ru.hse.diplom.cafe_recommend_backend.service.TokenGenerationService;
 import ru.hse.diplom.cafe_recommend_backend.service.UserService;
 
 import java.util.UUID;
@@ -29,7 +29,7 @@ public class AuthController {
     public static final String REFRESH_TOKEN_POINT = "/refreshToken";
 
     private final UserService userService;
-    private final RefreshTokenService refreshTokenService;
+    private final TokenGenerationService tokenGenerationService;
 
     @PostMapping(REGISTER_POINT)
     public ResponseEntity<UserDto> register(@Valid @RequestBody NewUserRequestDto new_user) {
@@ -63,7 +63,7 @@ public class AuthController {
 //                                                            @Parameter(description = "Данные пользователя")
                                                          RefreshTokenRequestDto request) {
         log.info(String.format("POST %s%s: Обновление access токена для пользователя с id = %s", AUTH_POINT, REFRESH_TOKEN_POINT, request.getUserId()));
-        return ResponseEntity.ok(refreshTokenService.generateAccessToken(request.getToken()));
+        return ResponseEntity.ok(tokenGenerationService.generateAccessToken(request.getToken()));
     }
 
     @PostMapping(SET_ADMIN_POINT)

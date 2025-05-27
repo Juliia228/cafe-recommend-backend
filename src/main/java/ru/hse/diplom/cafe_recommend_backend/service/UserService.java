@@ -2,6 +2,7 @@ package ru.hse.diplom.cafe_recommend_backend.service;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.apache.commons.math3.linear.RealVector;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.hse.diplom.cafe_recommend_backend.exception.UserAlreadyExistsException;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.UserDto;
-import ru.hse.diplom.cafe_recommend_backend.model.entity.RefreshToken;
 import ru.hse.diplom.cafe_recommend_backend.model.Role;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.User;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.AuthResponseDto;
@@ -29,11 +29,11 @@ import static ru.hse.diplom.cafe_recommend_backend.model.Constants.USER_DOES_NOT
 @AllArgsConstructor
 @Service
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final RefreshTokenService refreshTokenService;
+    private final IngredientService ingredientService;
+    private final TokenGenerationService tokenGenerationService;
 
     public User getCurrentUser() {
         String phone = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -41,17 +41,23 @@ public class UserService {
     }
 
     public User get(UUID id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.orElseThrow();
+        return userRepository.findById(id).orElseThrow();
     }
 
     public User getByPhone(String phone) {
-        Optional<User> user = userRepository.findByPhone(phone);
-        return user.orElseThrow();
+        return userRepository.findByPhone(phone).orElseThrow();
     }
 
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    @Transactional
+    public RealVector getUserPreferences(UUID userId) {
+        // Предпочтениями пользователя считаются оценки ингредиентов пользователя (0 - не пробовал, 1 - пробовал)
+//        List<UUID> orderedDishes = orderInfoRepository.findOrderedDishIdByUserId(userId);
+        List<UUID> orderedIngredients = ingredientService.getDistinctOrderedIngredientIds();
+        return ingredientService.getRatedIngredientsVector(orderedIngredients);
     }
 
     public UserDto add(NewUserRequestDto userDto) {
@@ -74,7 +80,7 @@ public class UserService {
 //            user.setRoles(roles.toArray());
         }
 
-        User newUser = null;
+        User newUser;
         try {
             newUser = userRepository.save(user);
         } catch (DuplicateKeyException e) {
@@ -90,16 +96,7 @@ public class UserService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(phone, password));
         if (authentication.isAuthenticated()) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String jwtToken = jwtService.generateToken(userDetails);
-            RefreshToken token = refreshTokenService.createRefreshToken(phone);
-            ;
-            User user = getByPhone(phone);
-            return AuthResponseDto.builder()
-                    .user(user)
-                    .accessToken(jwtToken)
-                    .refreshToken(token.getToken())
-                    .refreshTokenExpiration(token.getExpiration())
-                    .build();
+            return tokenGenerationService.createTokens(phone, userDetails);
         } else {
             throw new UsernameNotFoundException("User is not authorized");
         }
@@ -111,16 +108,7 @@ public class UserService {
         if (authentication.isAuthenticated()) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority(Role.ADMIN.name()))) {
-                String jwtToken = jwtService.generateToken(userDetails);
-                RefreshToken token = refreshTokenService.createRefreshToken(phone);
-                ;
-                User user = getByPhone(phone);
-                return AuthResponseDto.builder()
-                        .user(user)
-                        .accessToken(jwtToken)
-                        .refreshToken(token.getToken())
-                        .refreshTokenExpiration(token.getExpiration())
-                        .build();
+                return tokenGenerationService.createTokens(phone, userDetails);
             } else {
                 throw new RuntimeException(String.format("User with phone = %s does not have admin rights", phone));
             }
