@@ -1,13 +1,15 @@
-package ru.hse.diplom.cafe_recommend_backend.model;
+package ru.hse.diplom.cafe_recommend_backend.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.UUID;
 
-@Data
+@Builder
 @Entity
-@Table(name = "ingredients")
+@Getter
+@Table(schema = "blues", name = "ingredients")
 public class Ingredient {
     @Id
     @GeneratedValue
