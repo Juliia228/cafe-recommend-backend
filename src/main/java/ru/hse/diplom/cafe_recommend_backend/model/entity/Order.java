@@ -1,22 +1,21 @@
-package ru.hse.diplom.cafe_recommend_backend.model;
+package ru.hse.diplom.cafe_recommend_backend.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Data
+@Getter
 @Entity
-@Table(name = "orders")
+@Table(schema = "blues", name = "orders")
 public class Order {
     @Id
     @GeneratedValue
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
