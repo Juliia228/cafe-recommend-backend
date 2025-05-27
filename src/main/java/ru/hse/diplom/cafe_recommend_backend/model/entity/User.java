@@ -1,14 +1,16 @@
-package ru.hse.diplom.cafe_recommend_backend.model;
+package ru.hse.diplom.cafe_recommend_backend.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Builder
 @Data
 @Entity
-@Table(name = "users")
+@Table(schema = "blues", name = "users")
 public class User {
     @Id
     @GeneratedValue
@@ -21,7 +23,6 @@ public class User {
     private String lastName;
 
     @Column(name = "phone", nullable = false, unique = true, length = 20)
-
     private String phone;
 
     @Column(nullable = false)
