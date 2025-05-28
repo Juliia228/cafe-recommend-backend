@@ -6,9 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 import org.springframework.stereotype.Service;
+import ru.hse.diplom.cafe_recommend_backend.model.DishCategory;
+import ru.hse.diplom.cafe_recommend_backend.model.Season;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.DishDto;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.DishListDto;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.FullDishInfoDto;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.NewDishDto;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.Dish;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.Ingredient;
 import ru.hse.diplom.cafe_recommend_backend.repository.DishRepository;
@@ -16,6 +19,8 @@ import ru.hse.diplom.cafe_recommend_backend.repository.DishRepository;
 import java.util.*;
 
 import static ru.hse.diplom.cafe_recommend_backend.model.Constants.DISH_DOES_NOT_EXIST;
+import static ru.hse.diplom.cafe_recommend_backend.service.Utils.getValueOfDefault;
+import static ru.hse.diplom.cafe_recommend_backend.service.Utils.isStringEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -78,6 +83,26 @@ public class DishService {
     public RealVector getDefaultDishVector() {
         int dishesCount = getDishesCount();
         return new ArrayRealVector(dishesCount, 0);
+    }
+
+    public DishDto add(NewDishDto dto) {
+        validateNewDish(dto);
+        Dish dish = Dish.builder()
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .price(dto.getPrice())
+                .enabled(getValueOfDefault(dto.getEnabled(), false))
+                .category(DishCategory.valueOf(dto.getCategory()))
+                .season(Season.valueOf(getValueOfDefault(dto.getSeason(), Season.DEFAULT.name())))
+                .build();
+        return mapToDto(dishRepository.save(dish));
+    }
+
+    public void validateNewDish(NewDishDto dto) {
+        if (isStringEmpty(dto.getName()) || dto.getPrice() == null || dto.getPrice() == 0
+        || isStringEmpty(dto.getCategory())) {
+            throw new RuntimeException("Invalid new dish");
+        }
     }
 
     @Transactional

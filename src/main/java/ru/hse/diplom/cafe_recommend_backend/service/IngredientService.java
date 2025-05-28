@@ -7,6 +7,7 @@ import org.apache.commons.math3.linear.RealVector;
 import org.springframework.stereotype.Service;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.IngredientDto;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.IngredientListDto;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.NewIngredientDto;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.Ingredient;
 import ru.hse.diplom.cafe_recommend_backend.repository.IngredientRepository;
 
@@ -39,6 +40,13 @@ public class IngredientService {
     public IngredientListDto getAll() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
         return IngredientListDto.of(map(ingredients));
+    }
+
+    public IngredientDto add(NewIngredientDto dto) {
+        Ingredient ingredient = Ingredient.builder()
+                .name(dto.getName())
+                .build();
+        return map(ingredientRepository.save(ingredient));
     }
 
     @Transactional

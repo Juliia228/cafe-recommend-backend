@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.DishDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.DishListDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.FullDishInfoDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.IngredientListDto;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.*;
 import ru.hse.diplom.cafe_recommend_backend.service.DishService;
 import ru.hse.diplom.cafe_recommend_backend.service.IngredientService;
 
@@ -56,6 +53,12 @@ public class DishController {
     public ResponseEntity<DishListDto> getAllDishes(@RequestParam(defaultValue = "false") Boolean withIngredients) {
         log.info(String.format("GET %s%s: Получение всех блюд", DISH_POINT, GET_ALL_DISHES_POINT));
         return ResponseEntity.ok(dishService.getAll(withIngredients));
+    }
+
+    @PostMapping(NEW_DISH_POINT)
+    public ResponseEntity<DishDto> addDish(@Valid @RequestBody NewDishDto new_dish) {
+        log.info(String.format("POST %s%s: Добавление нового блюда с name = %s", DISH_POINT, NEW_DISH_POINT, new_dish.getName()));
+        return ResponseEntity.ok(dishService.add(new_dish));
     }
 
     @PostMapping(EDIT_DISH_POINT)
