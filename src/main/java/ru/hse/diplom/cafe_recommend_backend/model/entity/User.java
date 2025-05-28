@@ -22,11 +22,14 @@ public class User {
     @Column(name = "last_name", length = 20)
     private String lastName;
 
-    @Column(name = "phone", nullable = false, unique = true, length = 20)
+    @Column(nullable = false, unique = true, length = 20)
     private String phone;
 
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "key_word", nullable = false)
+    private String keyWord;
 
     @Column(name = "loyalty_discount")
     private Integer loyaltyDiscount;

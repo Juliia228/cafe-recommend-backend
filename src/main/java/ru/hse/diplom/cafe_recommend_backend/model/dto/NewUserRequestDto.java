@@ -17,6 +17,9 @@ public class NewUserRequestDto {
     @NotBlank(message = "password is required")
     private String password;
 
+    @NotBlank
+    private String keyWord;
+
     @NotBlank(message = "first name is required")
     private String firstName;
 

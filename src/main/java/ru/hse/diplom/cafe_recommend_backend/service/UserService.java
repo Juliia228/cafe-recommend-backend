@@ -123,6 +123,7 @@ public class UserService {
             throw new UserAlreadyExistsException(new_user.getPhone());
         }
         new_user.setPassword(passwordEncoder.encode(new_user.getPassword()));
+        new_user.setKeyWord(passwordEncoder.encode(new_user.getKeyWord()));
         return add(new_user);
     }
 
@@ -139,6 +140,17 @@ public class UserService {
     }
 
     public User edit(User new_user) {
+    @Transactional
+    public void resetPassword(ResetPasswordRequestDto request) {
+        User user = getByPhone(request.getPhone());
+        if (!passwordEncoder.matches(user.getKeyWord(), request.getKeyWord())) {
+            throw new RuntimeException("Wrong key word!");
+        }
+        request.setNewPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setPassword(request.getNewPassword());
+        userRepository.save(user);
+    }
+
         UUID id = new_user.getId();
         if (userRepository.existsById(id)) {
             return userRepository.save(new_user);

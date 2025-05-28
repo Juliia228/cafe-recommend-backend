@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.*;
-import ru.hse.diplom.cafe_recommend_backend.model.entity.User;
 import ru.hse.diplom.cafe_recommend_backend.service.TokenGenerationService;
 import ru.hse.diplom.cafe_recommend_backend.service.UserService;
 
@@ -54,7 +53,7 @@ public class AuthController {
     @PostMapping(RESET_PASSWORD_POINT)
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequestDto request) {
         log.info(String.format("POST %s%s: Сброс пароля для пользователя с phone = %s", AUTH_POINT, RESET_PASSWORD_POINT, request.getPhone()));
-        // TODO
+        userService.resetPassword(request);
         return ResponseEntity.ok("The password has been updated");
     }
 
