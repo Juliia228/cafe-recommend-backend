@@ -27,8 +27,7 @@ import static ru.hse.diplom.cafe_recommend_backend.model.Constants.PHONE_REGEXP;
 @Validated
 public class UserController {
     public static final String USER_REST_POINT = "/api/user";
-    public static final String USER_BY_ID_POINT = "/{userId}";
-    public static final String ALL_USERS_POINT = "/getAll";
+    public static final String GET_USER_DISCOUNT_POINT = "/discount";
     public static final String EDIT_USER_POINT = "/edit";
     public static final String DELETE_USER_POINT = "/delete";
     public static final String GET_RECOMMENDATIONS_POINT = "/recommendations";
@@ -42,10 +41,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getCurrentUser());
     }
 
-    @GetMapping(ALL_USERS_POINT)
-    public ResponseEntity<List<User>> getAllUsers() {
-        log.info(String.format("GET %s%s: Получение всех пользователей", USER_REST_POINT, ALL_USERS_POINT));
-        return ResponseEntity.ok(userService.getAll());
+    @GetMapping(GET_USER_DISCOUNT_POINT)
+    public ResponseEntity<GetUserDiscountDto> getUserDiscount(@RequestParam @Pattern(regexp = PHONE_REGEXP) String phone) {
+        log.info(String.format("GET %s%s: Получение размера скидки пользователя с phone = %s", USER_REST_POINT, GET_USER_DISCOUNT_POINT, phone));
+        return ResponseEntity.ok(userService.getUserDiscount(phone));
     }
 
     @GetMapping(GET_RECOMMENDATIONS_POINT)

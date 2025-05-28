@@ -50,6 +50,11 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public GetUserDiscountDto getUserDiscount(String phone) {
+        User user = getByPhone(phone);
+        return GetUserDiscountDto.of(user.getId(), user.getLoyaltyDiscount());
+    }
+
     @Transactional
     public RealVector getUserPreferences(UUID userId) {
         // Предпочтениями пользователя считаются оценки ингредиентов пользователя (0 - не пробовал, 1 - пробовал)
