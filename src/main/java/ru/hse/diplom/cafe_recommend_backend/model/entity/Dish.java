@@ -23,10 +23,10 @@ public class Dish {
     private String description;
 
     @Column(nullable = false)
-    private int price;
+    private Integer price;
 
     @Column(nullable = false)
-    private boolean enabled = false;
+    private Boolean enabled;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

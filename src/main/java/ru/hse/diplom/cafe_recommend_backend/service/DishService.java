@@ -28,7 +28,7 @@ public class DishService {
     private final IngredientService ingredientService;
     private final OrderService orderService;
 
-    public int getDishesCount() {
+    public Integer getDishesCount() {
         return dishRepository.getDishesCount();
     }
 
@@ -80,7 +80,7 @@ public class DishService {
     }
 
     public RealVector getDefaultDishVector() {
-        int dishesCount = getDishesCount();
+        Integer dishesCount = getDishesCount();
         return new ArrayRealVector(dishesCount, 0);
     }
 
@@ -119,7 +119,7 @@ public class DishService {
                 .name(dish.getName())
                 .description(dish.getDescription())
                 .price(dish.getPrice())
-                .enabled(dish.isEnabled())
+                .enabled(dish.getEnabled())
                 .category(dish.getCategory())
                 .season(dish.getSeason())
                 .build();
@@ -143,7 +143,7 @@ public class DishService {
                 .name(dish.getName())
                 .description(dish.getDescription())
                 .price(dish.getPrice())
-                .enabled(dish.isEnabled())
+                .enabled(dish.getEnabled())
                 .category(dish.getCategory())
                 .season(dish.getSeason())
                 .ingredients(ingredients == null || ingredients.isEmpty() ? List.of() : IngredientService.map(ingredients))

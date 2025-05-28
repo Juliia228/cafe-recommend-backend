@@ -18,5 +18,6 @@ public class OrderInfo {
     private UUID dishId;
 
     @Column(name = "dish_count", nullable = false)
-    private int dishCount = 1;
+    private Integer dishCount = 1;
+
 }

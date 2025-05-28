@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface DishRepository extends JpaRepository<Dish, UUID> {
     @Query("SELECT COUNT(*) FROM Dish")
-    int getDishesCount();
+    Integer getDishesCount();
 
     @Query("SELECT id " +
             "FROM Dish " +

@@ -37,11 +37,12 @@ public class RecommendationService {
         }
 
         List<FullDishInfoDto> recommendedDishes = dishService.getByIds(result.stream().toList());
-        recommendedDishes = addOtherFactors(recommendedDishes)
-                .stream()
-                .limit(request.getRecommendationsCount())
-                .toList();
+        recommendedDishes = addOtherFactors(recommendedDishes);
 
+        Integer count = request.getRecommendationsCount();
+        if (count != null && count > 0) {
+            recommendedDishes = recommendedDishes.stream().limit(count).toList();
+        }
         return RecommendationsResponseDto.of(recommendedDishes);
     }
 

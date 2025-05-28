@@ -19,7 +19,7 @@ public class DishDto {
     private String name;
     private String description;
     @Positive
-    private int price;
+    private Integer price;
     @NotNull
     private boolean enabled;
     @NotNull
