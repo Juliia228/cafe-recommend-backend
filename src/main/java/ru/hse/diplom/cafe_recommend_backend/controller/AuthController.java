@@ -66,7 +66,7 @@ public class AuthController {
     }
 
     @PostMapping(SET_ADMIN_POINT)
-    public ResponseEntity<User> setAdminForUser(@RequestParam
+    public ResponseEntity<UserDto> setAdminForUser(@RequestParam
 //                                                    @Parameter(description = "Идентификатор пользователя")  swagger
                                                 UUID id) {
         log.info(String.format("POST %s%s: Назначение пользователю с id = %s роль администратора", AUTH_POINT, SET_ADMIN_POINT, id));

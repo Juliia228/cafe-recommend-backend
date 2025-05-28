@@ -3,7 +3,6 @@ package ru.hse.diplom.cafe_recommend_backend.service;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.apache.commons.math3.linear.RealVector;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,16 +13,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.hse.diplom.cafe_recommend_backend.exception.UserAlreadyExistsException;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.UserDto;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.*;
 import ru.hse.diplom.cafe_recommend_backend.model.Role;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.User;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.AuthResponseDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.NewUserRequestDto;
 import ru.hse.diplom.cafe_recommend_backend.repository.UserRepository;
 
 import java.time.OffsetDateTime;
 import java.util.*;
 
+import static ru.hse.diplom.cafe_recommend_backend.model.Constants.BASE_DISCOUNT;
 import static ru.hse.diplom.cafe_recommend_backend.model.Constants.USER_DOES_NOT_EXIST;
 
 @AllArgsConstructor
@@ -35,9 +33,9 @@ public class UserService {
     private final IngredientService ingredientService;
     private final TokenGenerationService tokenGenerationService;
 
-    public User getCurrentUser() {
+    public UserDto getCurrentUser() {
         String phone = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getByPhone(phone);
+        return map(getByPhone(phone));
     }
 
     public User get(UUID id) {
@@ -62,33 +60,16 @@ public class UserService {
 
     public UserDto add(NewUserRequestDto userDto) {
         User user = User.builder()
-                .id(UUID.randomUUID())
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
                 .phone(userDto.getPhone())
                 .password(userDto.getPassword())
-                .loyaltyDiscount(3)
+                .keyWord(userDto.getKeyWord())
+                .loyaltyDiscount(BASE_DISCOUNT)
+                .roles(new String[]{Role.USER.name()})
                 .createdAt(OffsetDateTime.now())
                 .build();
-        if (userDto.getRoles() == null || userDto.getRoles().length == 0) {
-//            user.setRoles(new String[]{Role.USER.name()});
-        } else {
-            List<String> roles = Arrays.asList(userDto.getRoles());
-            if (!roles.contains(Role.USER.name())) {
-                roles.add(Role.USER.name());
-            }
-//            user.setRoles(roles.toArray());
-        }
-
-        User newUser;
-        try {
-            newUser = userRepository.save(user);
-        } catch (DuplicateKeyException e) {
-            user.setId(UUID.randomUUID());
-            newUser = userRepository.save(user);
-        }
-
-        return map(newUser);
+        return map(userRepository.save(user));
     }
 
     @Transactional
@@ -128,18 +109,16 @@ public class UserService {
     }
 
     @Transactional
-    public User setRoleAdmin(UUID id) {
+    public UserDto setRoleAdmin(UUID id) {
         User user = get(id);
-        List<String> roles = new ArrayList<>();
-//                Arrays.asList(user.getRoles());
+        List<String> roles = Arrays.asList(user.getRoles());
         if (!roles.contains(Role.ADMIN.name())) {
             roles.add(Role.ADMIN.name());
         }
-//        user.setRoles(roles.toArray());
-        return userRepository.save(user);
+        user.setRoles(roles.toArray(new String[0]));
+        return map(userRepository.save(user));
     }
 
-    public User edit(User new_user) {
     @Transactional
     public void resetPassword(ResetPasswordRequestDto request) {
         User user = getByPhone(request.getPhone());
@@ -151,9 +130,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public UserDto edit(UserDto new_user) {
         UUID id = new_user.getId();
         if (userRepository.existsById(id)) {
-            return userRepository.save(new_user);
+            return map(userRepository.save(map(new_user)));
         }
         throw new RuntimeException(String.format(USER_DOES_NOT_EXIST, id));
     }
@@ -168,6 +148,17 @@ public class UserService {
 
     public static UserDto map(User user) {
         return UserDto.builder()
+                .id(user.getId())
+                .phone(user.getPhone())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .loyaltyDiscount(user.getLoyaltyDiscount())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
+
+    public static User map(UserDto user) {
+        return User.builder()
                 .id(user.getId())
                 .phone(user.getPhone())
                 .firstName(user.getFirstName())

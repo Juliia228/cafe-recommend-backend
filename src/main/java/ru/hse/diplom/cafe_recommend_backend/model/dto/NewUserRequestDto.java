@@ -26,7 +26,4 @@ public class NewUserRequestDto {
     @NotBlank(message = "last name is required")
     private String lastName;
 
-//    private Integer loyaltyDiscount;
-
-    private String[] roles;
 }

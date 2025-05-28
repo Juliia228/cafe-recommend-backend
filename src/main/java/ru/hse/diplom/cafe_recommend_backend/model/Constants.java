@@ -1,6 +1,9 @@
 package ru.hse.diplom.cafe_recommend_backend.model;
 
 public class Constants {
+    // Initial discount for new user
+    public static final int BASE_DISCOUNT = 3;
+
     // Patterns
     public static final String PHONE_REGEXP = "^(8|7|\\+7)((\\d{10})|((\\s)?((\\()?\\d{3}(\\))?)(\\s|-)?\\d{3}(\\s|-)?\\d{2}(\\s|-)?\\d{2}))$";
     public static final String PASSWORD_REGEXP = "^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}$";

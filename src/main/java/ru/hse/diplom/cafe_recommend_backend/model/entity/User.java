@@ -37,5 +37,6 @@ public class User {
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
-//    private String[] roles;
+    private String[] roles;
+
 }

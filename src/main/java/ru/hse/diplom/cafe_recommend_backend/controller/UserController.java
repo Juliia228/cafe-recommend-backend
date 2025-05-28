@@ -1,21 +1,23 @@
 package ru.hse.diplom.cafe_recommend_backend.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.GetRecommendationsRequestDto;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.GetUserDiscountDto;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.RecommendationsResponseDto;
-import ru.hse.diplom.cafe_recommend_backend.model.entity.User;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.UserDto;
 import ru.hse.diplom.cafe_recommend_backend.service.RecommendationService;
 import ru.hse.diplom.cafe_recommend_backend.service.UserService;
 
-import java.util.List;
 import java.util.UUID;
 
 import static ru.hse.diplom.cafe_recommend_backend.controller.UserController.USER_REST_POINT;
+import static ru.hse.diplom.cafe_recommend_backend.model.Constants.PHONE_REGEXP;
 
 @CrossOrigin
 @RestController
@@ -34,12 +36,10 @@ public class UserController {
     private final UserService userService;
     private final RecommendationService recommendationService;
 
-    @GetMapping(USER_BY_ID_POINT)
-    public ResponseEntity<User> getUser(@PathVariable
-//                                            @Parameter(description = "Идентификатор пользователя")
-                                            UUID userId) {
-        log.info(String.format("GET %s%s: Получение пользователя по id = %s", USER_REST_POINT, USER_BY_ID_POINT, userId));
-        return ResponseEntity.ok(userService.get(userId));
+    @GetMapping()
+    public ResponseEntity<UserDto> getCurrentUser() {
+        log.info(String.format("GET %s: Получение информации о пользователе", USER_REST_POINT));
+        return ResponseEntity.ok(userService.getCurrentUser());
     }
 
     @GetMapping(ALL_USERS_POINT)
@@ -55,13 +55,13 @@ public class UserController {
     }
 
     @PostMapping(EDIT_USER_POINT)
-    public ResponseEntity<User> updateUser(@Valid @RequestBody User new_user) {
+    public ResponseEntity<UserDto> updateCurrentUser(@Valid @RequestBody UserDto new_user) {
         log.info(String.format("POST %s%s: Изменение данных пользователя с id = %s", USER_REST_POINT, EDIT_USER_POINT, new_user.getId()));
         return ResponseEntity.ok(userService.edit(new_user));
     }
 
     @DeleteMapping(DELETE_USER_POINT)
-    public ResponseEntity<String> deleteUser(@RequestParam UUID id) {
+    public ResponseEntity<String> deleteCurrentUser(@RequestParam UUID id) {
         log.info(String.format("DELETE %s%s: Удаление пользователя с id = %s", USER_REST_POINT, DELETE_USER_POINT, id));
         userService.delete(id);
         return ResponseEntity.ok("Deleted successfully");

@@ -49,13 +49,19 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll())
-                // TODO: fill permissions
-//                        .requestMatchers("user/signUp", "user/signIn", "user/refreshToken").permitAll()
-//                        .requestMatchers("").hasRole(Role.USER.name())
-//                        .requestMatchers("").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-//                        .requestMatchers("purchase/**", "route/**", "ticket/**", "transporter/**", "user/**").hasRole(Role.ADMIN.name())
-//                        .anyRequest().authenticated())
+                        .requestMatchers("/api/auth/register", "/api/auth/logIn", "/api/auth/logIn/admin",
+                                "/api/auth/resetPassword", "/api/auth/refreshToken", "/api/dish/getAll")
+                        .permitAll()
+                        .requestMatchers("/api/user", "/api/user/recommendations", "/api/user/edit")
+                        .hasRole(Role.USER.name())
+                        .requestMatchers("/api/user/delete", "/api/dish/{dishId}",
+                                "/api/dish/{dishId}/ingredients", "/api/dish/{dishId}/fullInfo",
+                                "/api/ingredient/{ingredientId}", "/api/ingredient/getAll")
+                        .hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+                        .requestMatchers("/api/auth/setAdmin", "/api/dish/new", "/api/dish/edit", "/api/dish/delete",
+                        "/api/ingredient/new", "/api/ingredient/edit", "/api/ingredient/delete")
+                        .hasRole(Role.ADMIN.name())
+                        .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
