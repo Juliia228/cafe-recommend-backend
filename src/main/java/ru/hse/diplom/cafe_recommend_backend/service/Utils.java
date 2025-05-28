@@ -19,10 +19,6 @@ public class Utils {
         return v1.dotProduct(v2) / (v1.getNorm() * v2.getNorm());
     }
 
-    public static boolean isStringEmpty(String str) {
-        return str == null || str.isEmpty();
-    }
-
     public static <T> T getValueOfDefault(T value, T defaultValue) {
         return value == null ? defaultValue : value;
     }

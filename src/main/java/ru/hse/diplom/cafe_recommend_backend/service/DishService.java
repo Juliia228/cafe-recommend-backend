@@ -20,7 +20,6 @@ import java.util.*;
 
 import static ru.hse.diplom.cafe_recommend_backend.model.Constants.DISH_DOES_NOT_EXIST;
 import static ru.hse.diplom.cafe_recommend_backend.service.Utils.getValueOfDefault;
-import static ru.hse.diplom.cafe_recommend_backend.service.Utils.isStringEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -86,7 +85,6 @@ public class DishService {
     }
 
     public DishDto add(NewDishDto dto) {
-        validateNewDish(dto);
         Dish dish = Dish.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
@@ -96,13 +94,6 @@ public class DishService {
                 .season(Season.valueOf(getValueOfDefault(dto.getSeason(), Season.DEFAULT.name())))
                 .build();
         return mapToDto(dishRepository.save(dish));
-    }
-
-    public void validateNewDish(NewDishDto dto) {
-        if (isStringEmpty(dto.getName()) || dto.getPrice() == null || dto.getPrice() == 0
-        || isStringEmpty(dto.getCategory())) {
-            throw new RuntimeException("Invalid new dish");
-        }
     }
 
     @Transactional
