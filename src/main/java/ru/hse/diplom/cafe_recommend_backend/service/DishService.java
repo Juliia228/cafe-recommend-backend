@@ -13,10 +13,7 @@ import ru.hse.diplom.cafe_recommend_backend.model.entity.Dish;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.Ingredient;
 import ru.hse.diplom.cafe_recommend_backend.repository.DishRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static ru.hse.diplom.cafe_recommend_backend.model.Constants.DISH_DOES_NOT_EXIST;
 
@@ -40,11 +37,13 @@ public class DishService {
         return null;
     }
 
-    public List<Dish> getByIds(List<UUID> ids) {
+    public List<FullDishInfoDto> getByIds(List<UUID> ids) {
         if (ids.isEmpty()) {
             return List.of();
         }
-        return dishRepository.findByIds(ids);
+        return dishRepository.findByIds(ids).stream()
+                .map(dish -> map(dish, null))
+                .toList();
     }
 
     public DishListDto getAll(Boolean withIngredients) {
@@ -76,7 +75,7 @@ public class DishService {
         return ingredientService.getRatedIngredientsVector(ingredientIds);
     }
 
-    public RealVector getEmptyDishVector() {
+    public RealVector getDefaultDishVector() {
         int dishesCount = getDishesCount();
         return new ArrayRealVector(dishesCount, 0);
     }
@@ -105,6 +104,8 @@ public class DishService {
                 .description(dish.getDescription())
                 .price(dish.getPrice())
                 .enabled(dish.isEnabled())
+                .category(dish.getCategory())
+                .season(dish.getSeason())
                 .build();
     }
 
@@ -115,6 +116,8 @@ public class DishService {
                 .description(dish.getDescription())
                 .price(dish.getPrice())
                 .enabled(dish.isEnabled())
+                .category(dish.getCategory())
+                .season(dish.getSeason())
                 .build();
     }
 
@@ -125,7 +128,9 @@ public class DishService {
                 .description(dish.getDescription())
                 .price(dish.getPrice())
                 .enabled(dish.isEnabled())
-                .ingredients(ingredients.isEmpty() ? List.of() : IngredientService.map(ingredients))
+                .category(dish.getCategory())
+                .season(dish.getSeason())
+                .ingredients(ingredients == null || ingredients.isEmpty() ? List.of() : IngredientService.map(ingredients))
                 .build();
     }
 

@@ -2,6 +2,8 @@ package ru.hse.diplom.cafe_recommend_backend.model.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import ru.hse.diplom.cafe_recommend_backend.model.DishCategory;
+import ru.hse.diplom.cafe_recommend_backend.model.Season;
 
 import java.util.UUID;
 
@@ -13,5 +15,6 @@ public class DishDto {
     private String description;
     private int price;
     private boolean enabled;
-    // TODO: add category
+    private DishCategory category;
+    private Season season;
 }

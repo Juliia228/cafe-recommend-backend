@@ -6,7 +6,8 @@ public enum Season {
     WINTER,
     SPRING,
     SUMMER,
-    AUTUMN;
+    AUTUMN,
+    DEFAULT;
 
     public static Season getCurrentSeason() {
         var currentMonth = LocalDateTime.now().getMonth();

@@ -21,6 +21,7 @@ public class RecommendationService {
     private final DishService dishService;
     private final OrderService orderService;
 
+    @Transactional
     public RecommendationsResponseDto recommend(GetRecommendationsRequestDto request) {
         UUID userId = request.getUserId();
         RealVector userPreferences = userService.getUserPreferences(userId);
@@ -31,14 +32,14 @@ public class RecommendationService {
         Set<UUID> result = new HashSet<>(contentBasedRecommendations);
         result.addAll(collaborativeRecommendations);
 
-        List<UUID> recommendations = Objects.requireNonNull(addOtherFactors(result))
+        if (result.isEmpty()) {
+            return RecommendationsResponseDto.of(List.of());
+        }
+
+        List<FullDishInfoDto> recommendedDishes = dishService.getByIds(result.stream().toList());
+        recommendedDishes = addOtherFactors(recommendedDishes)
                 .stream()
                 .limit(request.getRecommendationsCount())
-                .toList();
-
-        List<FullDishInfoDto> recommendedDishes = dishService.getByIds(recommendations)
-                .stream()
-                .map(dish -> DishService.map(dish, List.of()))
                 .toList();
 
         return RecommendationsResponseDto.of(recommendedDishes);
@@ -95,10 +96,16 @@ public class RecommendationService {
                 .toList();
     }
 
-    private List<UUID> addOtherFactors(Set<UUID> recommendations) {
-        Season season = Season.getCurrentSeason();
+    private List<FullDishInfoDto> addOtherFactors(List<FullDishInfoDto> recommendations) {
+        if (recommendations == null || recommendations.isEmpty()) {
+            return List.of();
+        }
 
-        return null;
+        Season currentSeason = Season.getCurrentSeason();
+        return recommendations.stream()
+                .filter(dishInfo ->
+                        dishInfo.getSeason().equals(currentSeason) || dishInfo.getSeason().equals(Season.DEFAULT))
+                .toList();
     }
 
 }

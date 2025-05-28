@@ -3,6 +3,8 @@ package ru.hse.diplom.cafe_recommend_backend.model.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import ru.hse.diplom.cafe_recommend_backend.model.DishCategory;
+import ru.hse.diplom.cafe_recommend_backend.model.Season;
 
 import java.util.UUID;
 
@@ -25,4 +27,13 @@ public class Dish {
 
     @Column(nullable = false)
     private boolean enabled = false;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DishCategory category;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Season season;
+
 }
