@@ -8,10 +8,7 @@ import org.apache.commons.math3.linear.RealVector;
 import org.springframework.stereotype.Service;
 import ru.hse.diplom.cafe_recommend_backend.model.DishCategory;
 import ru.hse.diplom.cafe_recommend_backend.model.Season;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.DishDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.DishListDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.FullDishInfoDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.NewDishDto;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.*;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.Dish;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.Ingredient;
 import ru.hse.diplom.cafe_recommend_backend.repository.DishRepository;
@@ -41,12 +38,20 @@ public class DishService {
         return null;
     }
 
-    public List<FullDishInfoDto> getByIds(List<UUID> ids) {
+    public List<DishDto> getByIds(List<UUID> ids) {
         if (ids.isEmpty()) {
             return List.of();
         }
         return dishRepository.findByIds(ids).stream()
-                .map(dish -> map(dish, null))
+                .map(DishService::mapToDto)
+                .toList();
+    }
+
+    public List<DishDto> getPopular() {
+        return dishRepository.findPopular()
+                .stream()
+                .map(DishPopularityDto::getDish)
+                .map(DishService::mapToDto)
                 .toList();
     }
 

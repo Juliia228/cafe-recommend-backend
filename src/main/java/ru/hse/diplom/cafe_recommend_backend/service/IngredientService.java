@@ -33,8 +33,8 @@ public class IngredientService {
         return IngredientListDto.of(map(ingredients));
     }
 
-    public List<UUID> getDistinctOrderedIngredientIds() {
-        return ingredientRepository.findDistinctOrderedIngredientIds();
+    public List<UUID> getDistinctOrderedIngredientIdsByUserId(UUID userId) {
+        return ingredientRepository.findDistinctOrderedIngredientIds(userId);
     }
 
     public IngredientListDto getAll() {

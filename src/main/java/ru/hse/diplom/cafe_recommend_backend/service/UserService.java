@@ -59,7 +59,7 @@ public class UserService {
     public RealVector getUserPreferences(UUID userId) {
         // Предпочтениями пользователя считаются оценки ингредиентов пользователя (0 - не пробовал, 1 - пробовал)
 //        List<UUID> orderedDishes = orderInfoRepository.findOrderedDishIdByUserId(userId);
-        List<UUID> orderedIngredients = ingredientService.getDistinctOrderedIngredientIds();
+        List<UUID> orderedIngredients = ingredientService.getDistinctOrderedIngredientIdsByUserId(userId);
         return ingredientService.getRatedIngredientsVector(orderedIngredients);
     }
 

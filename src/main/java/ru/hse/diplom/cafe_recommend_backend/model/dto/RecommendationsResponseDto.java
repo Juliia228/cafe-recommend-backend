@@ -8,6 +8,6 @@ import java.util.List;
 @AllArgsConstructor(staticName = "of")
 @Data
 public class RecommendationsResponseDto {
-    private List<FullDishInfoDto> recommendations;
+    private List<DishDto> recommendations;
 
 }

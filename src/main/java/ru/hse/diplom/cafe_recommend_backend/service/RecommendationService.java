@@ -1,12 +1,14 @@
 package ru.hse.diplom.cafe_recommend_backend.service;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.linear.RealVector;
 import org.springframework.stereotype.Service;
 import ru.hse.diplom.cafe_recommend_backend.model.Season;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.DishDto;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.FullDishInfoDto;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.GetRecommendationsRequestDto;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.RecommendationsResponseDto;
@@ -36,11 +38,18 @@ public class RecommendationService {
             return RecommendationsResponseDto.of(List.of());
         }
 
-        List<FullDishInfoDto> recommendedDishes = dishService.getByIds(result.stream().toList());
+        List<DishDto> recommendedDishes = dishService.getByIds(result.stream().toList());
         recommendedDishes = addOtherFactors(recommendedDishes);
 
         Integer count = request.getRecommendationsCount();
-        if (count != null && count > 0) {
+        if (count != null) {
+            if (recommendedDishes.size() < count) {
+                recommendedDishes = Stream.concat(
+                        recommendedDishes.stream(),
+                        dishService.getPopular().stream())
+                        .distinct()
+                        .toList();
+            }
             recommendedDishes = recommendedDishes.stream().limit(count).toList();
         }
         return RecommendationsResponseDto.of(recommendedDishes);
@@ -74,7 +83,7 @@ public class RecommendationService {
         Map<UUID, Double> scores = new HashMap<>();
         var users = userService.getAll();
 
-        for (User otherUser: users) {
+        for (User otherUser : users) {
             UUID otherUserId = otherUser.getId();
             if (!otherUserId.equals(userId)) {
                 RealVector otherUserPreferences = userService.getUserPreferences(otherUserId);
@@ -97,7 +106,7 @@ public class RecommendationService {
                 .toList();
     }
 
-    private List<FullDishInfoDto> addOtherFactors(List<FullDishInfoDto> recommendations) {
+    private List<DishDto> addOtherFactors(List<DishDto> recommendations) {
         if (recommendations == null || recommendations.isEmpty()) {
             return List.of();
         }
