@@ -44,7 +44,7 @@ public class UserController {
     @GetMapping(GET_USER_DISCOUNT_POINT)
     public ResponseEntity<GetUserDiscountDto> getUserDiscount(@RequestParam @Pattern(regexp = PHONE_REGEXP) String phone) {
         log.info(String.format("GET %s%s: Получение размера скидки пользователя с phone = %s", USER_REST_POINT, GET_USER_DISCOUNT_POINT, phone));
-        return ResponseEntity.ok(userService.getUserDiscount(phone));
+        return ResponseEntity.ok(userService.countUserDiscount(phone));
     }
 
     @GetMapping(GET_RECOMMENDATIONS_POINT)

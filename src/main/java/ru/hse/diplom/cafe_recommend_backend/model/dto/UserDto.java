@@ -13,6 +13,6 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String phone;
-    private Integer loyaltyDiscount;
+    private Double loyaltyDiscount;
     private OffsetDateTime createdAt;
 }

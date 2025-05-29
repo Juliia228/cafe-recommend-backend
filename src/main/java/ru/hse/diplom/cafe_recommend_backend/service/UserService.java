@@ -50,9 +50,29 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public GetUserDiscountDto getUserDiscount(String phone) {
+    @Transactional
+    public GetUserDiscountDto countUserDiscount(String phone) {
         User user = getByPhone(phone);
-        return GetUserDiscountDto.of(user.getId(), user.getLoyaltyDiscount());
+        UserDto updatedUser = map(user);
+        int userOrdersCount = orderService.getOrderCountByUser(user.getId());
+        double userLoyaltyDiscount = user.getLoyaltyDiscount();
+
+        LoyaltyProgramSettingsDto loyaltyProgramSettingsDto = loyaltyProgramService.getLoyaltySettings();
+        double maxDiscount = loyaltyProgramSettingsDto.getMaxDiscount();
+
+        if (userLoyaltyDiscount != maxDiscount
+                // и если количество заказов, деленное на количество повышений скидки + 1 больше или равно требуемого значения
+                && (userOrdersCount / (user.getLoyaltyDiscountIncrementCount() + 1)) >= loyaltyProgramSettingsDto.getOrdersThreshold()) {
+            double newUserDiscount = userLoyaltyDiscount + loyaltyProgramSettingsDto.getDiscountIncrement();
+            if (newUserDiscount > maxDiscount) {
+                newUserDiscount = maxDiscount;
+            }
+            user.setLoyaltyDiscount(newUserDiscount);
+            user.setLoyaltyDiscountIncrementCount(user.getLoyaltyDiscountIncrementCount() + 1);
+
+            updatedUser = save(user);
+        }
+        return GetUserDiscountDto.of(updatedUser.getId(), updatedUser.getLoyaltyDiscount());
     }
 
     @Transactional
@@ -64,17 +84,27 @@ public class UserService {
     }
 
     public UserDto add(NewUserRequestDto userDto) {
+        double baseDiscount = loyaltyProgramService.getLoyaltySettings().getBaseDiscount();
         User user = User.builder()
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
                 .phone(userDto.getPhone())
                 .password(userDto.getPassword())
                 .keyWord(userDto.getKeyWord())
-                .loyaltyDiscount(BASE_DISCOUNT)
+                .loyaltyDiscount(baseDiscount)
+                .loyaltyDiscountIncrementCount(0)
                 .roles(new String[]{Role.USER.name()})
                 .createdAt(OffsetDateTime.now())
                 .build();
         return map(userRepository.save(user));
+    }
+
+    public UserDto save(User user) {
+        return map(userRepository.save(user));
+    }
+
+    public List<UserDto> saveAll(List<User> users) {
+        return map(userRepository.saveAll(users));
     }
 
     @Transactional
@@ -171,6 +201,12 @@ public class UserService {
                 .loyaltyDiscount(user.getLoyaltyDiscount())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    public static List<UserDto> map(List<User> users) {
+        return users.stream()
+                .map(UserService::map)
+                .toList();
     }
 
 }

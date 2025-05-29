@@ -2,6 +2,7 @@ package ru.hse.diplom.cafe_recommend_backend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.FullOrderInfoDto;
 import ru.hse.diplom.cafe_recommend_backend.repository.OrderInfoRepository;
 import ru.hse.diplom.cafe_recommend_backend.repository.OrderRepository;
 
@@ -16,6 +17,10 @@ public class OrderService {
 
     public List<UUID> getOrderedDishesId(UUID userId) {
         return orderInfoRepository.findOrderedDishIdByUserId(userId);
+    }
+
+    public int getOrderCountByUser(UUID userId) {
+        return orderRepository.findOrdersCountByUserId(userId);
     }
 
 }

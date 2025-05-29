@@ -9,5 +9,5 @@ import java.util.UUID;
 @Getter
 public class GetUserDiscountDto {
     private UUID userId;
-    private Integer discount;
+    private Double discount;
 }

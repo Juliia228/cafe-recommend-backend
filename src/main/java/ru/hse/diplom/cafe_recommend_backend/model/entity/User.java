@@ -32,7 +32,10 @@ public class User {
     private String keyWord;
 
     @Column(name = "loyalty_discount")
-    private Integer loyaltyDiscount;
+    private Double loyaltyDiscount;
+
+    @Column(name = "loyalty_discount_increment_count")
+    private Integer loyaltyDiscountIncrementCount;
 
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
