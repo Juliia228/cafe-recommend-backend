@@ -12,26 +12,34 @@ import java.util.UUID;
 @Entity
 @Getter
 @Table(schema = "blues", name = "dishes")
+// Блюда кафе "Блюз"
 public class Dish {
+    // Идентификатор блюда
     @Id
     @GeneratedValue
     private UUID id;
 
+    // Название блюда
     @Column(nullable = false)
     private String name;
 
+    // Описание блюда
     private String description;
 
+    // Цена блюда
     @Column(nullable = false)
     private Integer price;
 
+    // Доступно ли блюдо для заказа
     @Column(nullable = false)
     private Boolean enabled;
 
+    // Категория блюда
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DishCategory category;
 
+    // В какой сезон лучше рекомендовать блюдо. "DEFAULT" - блюдо подходит для любого сезона
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Season season;

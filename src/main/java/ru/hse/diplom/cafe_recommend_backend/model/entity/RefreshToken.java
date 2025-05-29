@@ -11,17 +11,22 @@ import java.util.UUID;
 @Table(schema = "blues", name = "tokens")
 @Getter
 @Builder
+// Refresh токены
 public class RefreshToken {
+    // Идентификатор
     @Id
     @GeneratedValue
     private UUID id;
 
+    // Refresh токен
     @Column(nullable = false)
     private String token;
 
+    // Дата истечения срока токена
     @Column(nullable = false)
     private ZonedDateTime expiration;
 
+    // Идентификатор пользователя
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 }

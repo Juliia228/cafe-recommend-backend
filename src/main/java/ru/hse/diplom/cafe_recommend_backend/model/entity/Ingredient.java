@@ -10,11 +10,14 @@ import java.util.UUID;
 @Entity
 @Getter
 @Table(schema = "blues", name = "ingredients")
+// Ингредиенты
 public class Ingredient {
+    // Идентификатор ингредиента
     @Id
     @GeneratedValue
     private UUID id;
 
+    // Название ингредиента на русском языке
     @Column(nullable = false)
     private String name;
 }
