@@ -30,7 +30,7 @@ public class DishService {
     }
 
     public DishDto get(UUID id) {
-        return mapToDto(dishRepository.findById(id).orElseThrow());
+        return map(dishRepository.findById(id).orElseThrow());
     }
 
     public FullDishInfoDto getWithIngredients(UUID id) {
@@ -43,7 +43,7 @@ public class DishService {
             return List.of();
         }
         return dishRepository.findByIds(ids).stream()
-                .map(DishService::mapToDto)
+                .map(DishService::map)
                 .toList();
     }
 
@@ -51,7 +51,7 @@ public class DishService {
         return dishRepository.findPopular()
                 .stream()
                 .map(DishPopularityDto::getDish)
-                .map(DishService::mapToDto)
+                .map(DishService::map)
                 .toList();
     }
 
@@ -98,14 +98,14 @@ public class DishService {
                 .category(DishCategory.valueOf(dto.getCategory()))
                 .season(Season.valueOf(getValueOfDefault(dto.getSeason(), Season.DEFAULT.name())))
                 .build();
-        return mapToDto(dishRepository.save(dish));
+        return map(dishRepository.save(dish));
     }
 
     @Transactional
     public DishDto edit(DishDto newDish) {
         UUID id = newDish.getId();
         if (dishRepository.existsById(id)) {
-            return mapToDto(dishRepository.save(map(newDish)));
+            return map(dishRepository.save(map(newDish)));
         }
         throw new RuntimeException(String.format(DISH_DOES_NOT_EXIST, id));
     }
@@ -118,7 +118,7 @@ public class DishService {
         dishRepository.deleteById(id);
     }
 
-    public static DishDto mapToDto(Dish dish) {
+    public static DishDto map(Dish dish) {
         return DishDto.builder()
                 .id(dish.getId())
                 .name(dish.getName())
@@ -132,6 +132,18 @@ public class DishService {
 
     public static Dish map(@NotNull DishDto dish) {
         return Dish.builder()
+                .id(dish.getId())
+                .name(dish.getName())
+                .description(dish.getDescription())
+                .price(dish.getPrice())
+                .enabled(dish.isEnabled())
+                .category(dish.getCategory())
+                .season(dish.getSeason())
+                .build();
+    }
+
+    public static DishDto map(FullDishInfoDto dish) {
+        return DishDto.builder()
                 .id(dish.getId())
                 .name(dish.getName())
                 .description(dish.getDescription())
@@ -157,7 +169,7 @@ public class DishService {
 
     public static List<DishDto> map(@NotNull List<Dish> dishes) {
         return dishes.stream()
-                .map(DishService::mapToDto)
+                .map(DishService::map)
                 .toList();
     }
 
