@@ -21,8 +21,8 @@ import static ru.hse.diplom.cafe_recommend_backend.controller.DishController.DIS
 public class DishController {
     public static final String DISH_POINT = "/api/dish";
     public static final String GET_DISH_POINT = "/{dishId}";
-    public static final String GET_DISH_WITH_INGREDIENTS_POINT = "/{dishId}/fullInfo";
-    public static final String GET_ALL_DISHES_POINT = "/getAll";
+    public static final String GET_DISH_WITH_INGREDIENTS_POINT = "/{dishId}/full-info";
+    public static final String GET_ALL_DISHES_POINT = "/get-all";
     public static final String NEW_DISH_POINT = "/new";
     public static final String EDIT_DISH_POINT = "/edit";
     public static final String DELETE_DISH_POINT = "/{dishId}";

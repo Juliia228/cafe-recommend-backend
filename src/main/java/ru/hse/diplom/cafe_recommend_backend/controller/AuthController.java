@@ -21,11 +21,11 @@ import static ru.hse.diplom.cafe_recommend_backend.controller.AuthController.AUT
 public class AuthController {
     public static final String AUTH_POINT = "/api/auth";
     public static final String REGISTER_POINT = "/register";
-    public static final String LOG_IN_POINT = "/logIn";
-    public static final String LOG_IN_ADMIN_POINT = "/logIn/admin";
-    public static final String RESET_PASSWORD_POINT = "/resetPassword";
-    public static final String SET_ADMIN_POINT = "/setAdmin";
-    public static final String REFRESH_TOKEN_POINT = "/refreshToken";
+    public static final String LOG_IN_POINT = "/log-in";
+    public static final String LOG_IN_ADMIN_POINT = LOG_IN_POINT + "/admin";
+    public static final String RESET_PASSWORD_POINT = "/reset-password";
+    public static final String SET_ADMIN_POINT = "/set-admin";
+    public static final String REFRESH_TOKEN_POINT = "/refresh-token";
 
     private final UserService userService;
     private final TokenGenerationService tokenGenerationService;

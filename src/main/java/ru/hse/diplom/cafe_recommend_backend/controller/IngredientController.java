@@ -22,7 +22,7 @@ import static ru.hse.diplom.cafe_recommend_backend.controller.IngredientControll
 public class IngredientController {
     public static final String INGREDIENT_REST_POINT = "/api/ingredient";
     public static final String INGREDIENT_BY_ID_POINT = "/{ingredientId}";
-    public static final String ALL_INGREDIENTS_POINT = "/getAll";
+    public static final String ALL_INGREDIENTS_POINT = "/get-all";
     public static final String NEW_INGREDIENT_POINT = "/new";
     public static final String EDIT_INGREDIENT_POINT = "/edit";
     public static final String DELETE_INGREDIENT_POINT = "/delete";
