@@ -30,7 +30,7 @@ public class IngredientService {
 
     public IngredientListDto getIngredientsByDishId(UUID dishId) {
         List<Ingredient> ingredients = ingredientRepository.findByDishId(dishId);
-        return IngredientListDto.of(map(ingredients));
+        return IngredientListDto.of(IngredientService.mapToDto(ingredients));
     }
 
     public List<UUID> getDistinctOrderedIngredientIdsByUserId(UUID userId) {
@@ -39,7 +39,7 @@ public class IngredientService {
 
     public IngredientListDto getAll() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
-        return IngredientListDto.of(map(ingredients));
+        return IngredientListDto.of(IngredientService.mapToDto(ingredients));
     }
 
     public IngredientDto add(NewIngredientDto dto) {
@@ -88,7 +88,13 @@ public class IngredientService {
                 .build();
     }
 
-    public static List<IngredientDto> map(@NotNull List<Ingredient> ingredients) {
+    public static List<IngredientDto> mapToDto(@NotNull List<Ingredient> ingredients) {
+        return ingredients.stream()
+                .map(IngredientService::map)
+                .toList();
+    }
+
+    public static List<Ingredient> map(@NotNull List<IngredientDto> ingredients) {
         return ingredients.stream()
                 .map(IngredientService::map)
                 .toList();

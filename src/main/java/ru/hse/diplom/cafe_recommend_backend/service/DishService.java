@@ -34,8 +34,7 @@ public class DishService {
     }
 
     public FullDishInfoDto getWithIngredients(UUID id) {
-        // TODO
-        return null;
+        return map(dishRepository.findById(id).orElseThrow(), IngredientService.map(ingredientService.getIngredientsByDishId(id).getIngredients()));
     }
 
     public List<FullDishInfoDto> getByIds(List<UUID> ids) {
@@ -64,6 +63,14 @@ public class DishService {
         List<Dish> dishes = dishRepository.findAll();
         return DishListDto.of(mapToFullDishInfoList(dishes));
     }
+
+//    public CategoryListDto getAllCategories() {
+//        return CategoryListDto.of(
+//                Arrays.stream(DishCategory)
+//                        .map(Objects::toString)
+//                        .toList()
+//        );
+//    }
 
     @Transactional
     public Map<UUID, Integer> getRatedDishes(UUID userId) {
@@ -164,7 +171,7 @@ public class DishService {
                 .enabled(dish.getEnabled())
                 .category(dish.getCategory())
                 .season(dish.getSeason())
-                .ingredients(ingredients == null || ingredients.isEmpty() ? List.of() : IngredientService.map(ingredients))
+                .ingredients(ingredients == null || ingredients.isEmpty() ? List.of() : IngredientService.mapToDto(ingredients))
                 .build();
     }
 
