@@ -38,20 +38,21 @@ public class DishService {
         return null;
     }
 
-    public List<DishDto> getByIds(List<UUID> ids) {
+    public List<FullDishInfoDto> getByIds(List<UUID> ids) {
         if (ids.isEmpty()) {
             return List.of();
         }
         return dishRepository.findByIds(ids).stream()
-                .map(DishService::map)
+                .map(dish -> DishService.map(dish, List.of()))
                 .toList();
     }
 
-    public List<DishDto> getPopular() {
+    public List<FullDishInfoDto> getPopular() {
         return dishRepository.findPopular()
                 .stream()
+                .sorted(Comparator.comparingLong(DishPopularityDto::getTotalOrders).reversed())
                 .map(DishPopularityDto::getDish)
-                .map(DishService::map)
+                .map(dish -> DishService.map(dish, List.of()))
                 .toList();
     }
 
@@ -95,8 +96,8 @@ public class DishService {
                 .description(dto.getDescription())
                 .price(dto.getPrice())
                 .enabled(getValueOfDefault(dto.getEnabled(), false))
-                .category(DishCategory.valueOf(dto.getCategory()))
-                .season(Season.valueOf(getValueOfDefault(dto.getSeason(), Season.DEFAULT.name())))
+                .category(DishCategory.valueOf(dto.getCategory().toLowerCase()))
+                .season(Season.valueOf(getValueOfDefault(dto.getSeason().toUpperCase(), Season.DEFAULT.name())))
                 .build();
         return map(dishRepository.save(dish));
     }

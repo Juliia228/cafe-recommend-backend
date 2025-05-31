@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.IngredientDto;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.IngredientListDto;
@@ -19,6 +20,7 @@ import static ru.hse.diplom.cafe_recommend_backend.controller.IngredientControll
 @RequiredArgsConstructor
 @RestController
 @Slf4j
+@Validated
 public class IngredientController {
     public static final String INGREDIENT_REST_POINT = "/api/ingredient";
     public static final String INGREDIENT_BY_ID_POINT = "/{ingredientId}";

@@ -19,6 +19,10 @@ public class OrderService {
         return orderInfoRepository.findOrderedDishIdByUserId(userId);
     }
 
+    public List<FullOrderInfoDto> getAllFullOrders() {
+        return orderRepository.findAllWithOrderInfo();
+    }
+
     public int getOrderCountByUser(UUID userId) {
         return orderRepository.findOrdersCountByUserId(userId);
     }

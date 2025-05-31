@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.GetRecommendationsRequestDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.GetUserDiscountDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.RecommendationsResponseDto;
-import ru.hse.diplom.cafe_recommend_backend.model.dto.UserDto;
+import ru.hse.diplom.cafe_recommend_backend.model.dto.*;
 import ru.hse.diplom.cafe_recommend_backend.service.RecommendationService;
 import ru.hse.diplom.cafe_recommend_backend.service.UserService;
 
@@ -51,6 +48,9 @@ public class UserController {
     public ResponseEntity<RecommendationsResponseDto> getRecommendationsForUser(@RequestBody GetRecommendationsRequestDto request) {
         log.info(String.format("GET %s%s: Получение рекомендаций для пользователя с id = %s", USER_REST_POINT, ALL_USERS_POINT, request.getUserId()));
         return ResponseEntity.ok(recommendationService.recommend(request));
+        log.info(String.format("GET %s%s: Получение рекомендаций для пользователя с id = %s", USER_REST_POINT, GET_RECOMMENDATIONS_POINT, request.getUserId()));
+//        return ResponseEntity.ok(recommendationService.recommendV1(request));
+        return ResponseEntity.ok(recommendationService.recommendV2(request));
     }
 
     @PostMapping(EDIT_USER_POINT)

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.*;
 import ru.hse.diplom.cafe_recommend_backend.service.TokenGenerationService;
@@ -18,6 +19,7 @@ import static ru.hse.diplom.cafe_recommend_backend.controller.AuthController.AUT
 @RequestMapping(AUTH_POINT)
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class AuthController {
     public static final String AUTH_POINT = "/api/auth";
     public static final String REGISTER_POINT = "/register";
@@ -58,17 +60,13 @@ public class AuthController {
     }
 
     @PostMapping(REFRESH_TOKEN_POINT)
-    public ResponseEntity<TokenResponseDto> refreshToken(@Valid @RequestBody
-//                                                            @Parameter(description = "Данные пользователя")
-                                                         RefreshTokenRequestDto request) {
+    public ResponseEntity<TokenResponseDto> refreshToken(@Valid @RequestBody RefreshTokenRequestDto request) {
         log.info(String.format("POST %s%s: Обновление access токена для пользователя с id = %s", AUTH_POINT, REFRESH_TOKEN_POINT, request.getUserId()));
         return ResponseEntity.ok(tokenGenerationService.generateAccessToken(request.getToken()));
     }
 
     @PostMapping(SET_ADMIN_POINT)
-    public ResponseEntity<UserDto> setAdminForUser(@RequestParam
-//                                                    @Parameter(description = "Идентификатор пользователя")  swagger
-                                                UUID id) {
+    public ResponseEntity<UserDto> setAdminForUser(@RequestParam UUID id) {
         log.info(String.format("POST %s%s: Назначение пользователю с id = %s роль администратора", AUTH_POINT, SET_ADMIN_POINT, id));
         return ResponseEntity.ok(userService.setRoleAdmin(id));
     }

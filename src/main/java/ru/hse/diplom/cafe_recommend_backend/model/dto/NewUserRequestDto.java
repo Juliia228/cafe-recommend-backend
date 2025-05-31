@@ -2,12 +2,14 @@ package ru.hse.diplom.cafe_recommend_backend.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import lombok.Data;
 
 import static ru.hse.diplom.cafe_recommend_backend.model.Constants.PASSWORD_REGEXP;
 import static ru.hse.diplom.cafe_recommend_backend.model.Constants.PHONE_REGEXP;
 
 @Data
+@Builder
 public class NewUserRequestDto {
     @Pattern(regexp = PHONE_REGEXP)
     @NotBlank(message = "phone is required")

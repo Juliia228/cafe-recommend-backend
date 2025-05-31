@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.hse.diplom.cafe_recommend_backend.model.DishCategory;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.*;
 import ru.hse.diplom.cafe_recommend_backend.service.DishService;
 import ru.hse.diplom.cafe_recommend_backend.service.IngredientService;
@@ -18,6 +20,7 @@ import static ru.hse.diplom.cafe_recommend_backend.controller.DishController.DIS
 @RequiredArgsConstructor
 @RestController
 @Slf4j
+@Validated
 public class DishController {
     public static final String DISH_POINT = "/api/dish";
     public static final String GET_DISH_POINT = "/{dishId}";
@@ -27,6 +30,7 @@ public class DishController {
     public static final String EDIT_DISH_POINT = "/edit";
     public static final String DELETE_DISH_POINT = "/{dishId}";
     public static final String GET_DISH_INGREDIENTS_POINT = "/{dishId}/ingredients";
+    public static final String GET_ALL_CATEGORIES_POINT = "/all-categories";
 
     private final DishService dishService;
     private final IngredientService ingredientService;
@@ -53,6 +57,12 @@ public class DishController {
     public ResponseEntity<DishListDto> getAllDishes(@RequestParam(defaultValue = "false") Boolean withIngredients) {
         log.info(String.format("GET %s%s: Получение всех блюд", DISH_POINT, GET_ALL_DISHES_POINT));
         return ResponseEntity.ok(dishService.getAll(withIngredients));
+    }
+
+    @GetMapping(GET_ALL_CATEGORIES_POINT)
+    public ResponseEntity<CategoryListDto> getAllCategories() {
+        log.info(String.format("GET %s%s: Получение всех категорий блюд", DISH_POINT, GET_ALL_CATEGORIES_POINT));
+        return ResponseEntity.ok(CategoryListDto.of(DishCategory.getRusNames()));
     }
 
     @PostMapping(NEW_DISH_POINT)

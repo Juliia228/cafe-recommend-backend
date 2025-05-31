@@ -83,6 +83,14 @@ public class UserService {
         return ingredientService.getRatedIngredientsVector(orderedIngredients);
     }
 
+    public Map<UUID, Integer> createUserIndexMap() {
+        List<UUID> allUsers = getAll().stream()
+                .map(User::getId)
+                .toList();
+        return createIndexMap(allUsers);
+    }
+
+    @Transactional
     public UserDto add(NewUserRequestDto userDto) {
         double baseDiscount = loyaltyProgramService.getLoyaltySettings().getBaseDiscount();
         User user = User.builder()
