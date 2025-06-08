@@ -73,7 +73,7 @@ public class RecommendationService {
     public List<UUID> contentBasedRecommendV1(RealVector userPreferencesVector, UUID userId) {
         List<UUID> recommendations = new ArrayList<>();
         List<UUID> userOrderedDishes = orderService.getOrderedDishesId(userId);
-        List<FullDishInfoDto> dishes = dishService.getAll(false).getDishes();
+        List<FullDishInfoDto> dishes = dishService.getAll(false, false).getDishes();
 
         dishes.forEach(dish -> {
             var dishId = dish.getId();
@@ -125,7 +125,7 @@ public class RecommendationService {
         // присваиваем числовые индексы идентификаторам пользователей и блюд
         Map<UUID, Integer> userIndexMap = userService.createUserIndexMap();
 
-        List<FullDishInfoDto> allDishes = dishService.getAll(false).getDishes();
+        List<FullDishInfoDto> allDishes = dishService.getAll(false, false).getDishes();
         List<UUID> allDishesIds = allDishes
                 .stream()
                 .map(FullDishInfoDto::getId)
@@ -152,7 +152,7 @@ public class RecommendationService {
         // присваиваем числовые индексы идентификаторам пользователей и блюд
         Map<UUID, Integer> userIndexMap = userService.createUserIndexMap();
 
-        List<FullDishInfoDto> allDishes = dishService.getAll(false).getDishes();
+        List<FullDishInfoDto> allDishes = dishService.getAll(false, false).getDishes();
         List<UUID> allDishesIds = allDishes
                 .stream()
                 .map(FullDishInfoDto::getId)
@@ -188,7 +188,7 @@ public class RecommendationService {
     }
 
     public void fitContentBasedModel() {
-        List<FullDishInfoDto> allDishes = dishService.getAll(true).getDishes();
+        List<FullDishInfoDto> allDishes = dishService.getAll(true, false).getDishes();
         List<List<String>> dishesIngredients = allDishes.stream()
                 .map(dish -> dish.getIngredients().stream()
                         .map(IngredientDto::getName)
@@ -207,22 +207,32 @@ public class RecommendationService {
                 .block();
     }
 
-    public MessageDto sendRequestToFitCollaborativeFilteringModel(UsersDishesMatrix userItemMatrix) {
-        return webClient.post()
+    public void sendRequestToFitCollaborativeFilteringModel(UsersDishesMatrix userItemMatrix) {
+        MessageDto response = webClient.post()
                 .uri("/fit-collaborative-filtering-model")
                 .bodyValue(userItemMatrix)
                 .retrieve()
                 .bodyToMono(MessageDto.class)
                 .block();
+        if (response == null) {
+            log.warn("Response from /fit-collaborative-filtering-model is null");
+        } else {
+            log.info("Response from /fit-collaborative-filtering-model: {}", response.getMessage());
+        }
     }
 
-    public MessageDto sendRequestToFitContentBasedModel(DishIngredientsListDto dto) {
-        return webClient.post()
+    public void sendRequestToFitContentBasedModel(DishIngredientsListDto dto) {
+        MessageDto response = webClient.post()
                 .uri("/fit-content-based-model")
                 .bodyValue(dto)
                 .retrieve()
                 .bodyToMono(MessageDto.class)
                 .block();
+        if (response == null) {
+            log.warn("Response from /fit-content-based-model is null");
+        } else {
+            log.info("Response from /fit-content-based-model: {}", response.getMessage());
+        }
     }
 
     private List<FullDishInfoDto> addOtherFactors(List<FullDishInfoDto> recommendations) {

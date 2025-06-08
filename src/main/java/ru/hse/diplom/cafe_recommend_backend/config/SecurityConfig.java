@@ -21,6 +21,10 @@ import ru.hse.diplom.cafe_recommend_backend.model.Role;
 import ru.hse.diplom.cafe_recommend_backend.service.UserDetailsServiceImpl;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import static ru.hse.diplom.cafe_recommend_backend.controller.AuthController.*;
+import static ru.hse.diplom.cafe_recommend_backend.controller.DishController.*;
+import static ru.hse.diplom.cafe_recommend_backend.controller.IngredientController.*;
+import static ru.hse.diplom.cafe_recommend_backend.controller.UserController.*;
 
 @Configuration
 @EnableWebSecurity
@@ -49,17 +53,21 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/logIn", "/api/auth/logIn/admin",
-                                "/api/auth/resetPassword", "/api/auth/refreshToken", "/api/dish/getAll")
+                        .requestMatchers(AUTH_POINT + REGISTER_POINT, AUTH_POINT + LOG_IN_POINT,
+                                AUTH_POINT + LOG_IN_ADMIN_POINT, AUTH_POINT + RESET_PASSWORD_POINT,
+                                AUTH_POINT + REFRESH_TOKEN_POINT, DISH_POINT + GET_ALL_DISHES_POINT)
                         .permitAll()
-                        .requestMatchers("/api/user", "/api/user/recommendations", "/api/user/edit")
+                        .requestMatchers(USER_REST_POINT, USER_REST_POINT + GET_RECOMMENDATIONS_POINT,
+                                USER_REST_POINT + EDIT_USER_POINT)
                         .hasRole(Role.USER.name())
-                        .requestMatchers("/api/user/delete", "/api/dish/{dishId}",
-                                "/api/dish/{dishId}/ingredients", "/api/dish/{dishId}/fullInfo",
-                                "/api/ingredient/{ingredientId}", "/api/ingredient/getAll")
+                        .requestMatchers(USER_REST_POINT + DELETE_USER_POINT, DISH_POINT + GET_DISH_POINT,
+                                DISH_POINT + GET_DISH_INGREDIENTS_POINT, DISH_POINT + GET_DISH_WITH_INGREDIENTS_POINT,
+                                INGREDIENT_REST_POINT + INGREDIENT_BY_ID_POINT, INGREDIENT_REST_POINT + ALL_INGREDIENTS_POINT,
+                                DISH_POINT + GET_ALL_CATEGORIES_POINT)
                         .hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-                        .requestMatchers("/api/auth/setAdmin", "/api/dish/new", "/api/dish/edit", "/api/dish/delete",
-                        "/api/ingredient/new", "/api/ingredient/edit", "/api/ingredient/delete")
+                        .requestMatchers(AUTH_POINT + SET_ADMIN_POINT, DISH_POINT + NEW_DISH_POINT,
+                                DISH_POINT + EDIT_DISH_POINT, DISH_POINT + DELETE_DISH_POINT, INGREDIENT_REST_POINT + NEW_INGREDIENT_POINT,
+                                INGREDIENT_REST_POINT + EDIT_INGREDIENT_POINT, INGREDIENT_REST_POINT + DELETE_INGREDIENT_POINT)
                         .hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

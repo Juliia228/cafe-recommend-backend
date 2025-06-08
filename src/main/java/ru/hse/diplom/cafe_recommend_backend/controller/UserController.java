@@ -44,7 +44,7 @@ public class UserController {
         return ResponseEntity.ok(userService.countUserDiscount(phone));
     }
 
-    @GetMapping(GET_RECOMMENDATIONS_POINT)
+    @PostMapping(GET_RECOMMENDATIONS_POINT)
     public ResponseEntity<RecommendationsResponseDto> getRecommendationsForUser(@RequestBody GetRecommendationsRequestDto request) {
         log.info(String.format("GET %s%s: Получение рекомендаций для пользователя с id = %s", USER_REST_POINT, ALL_USERS_POINT, request.getUserId()));
         return ResponseEntity.ok(recommendationService.recommend(request));

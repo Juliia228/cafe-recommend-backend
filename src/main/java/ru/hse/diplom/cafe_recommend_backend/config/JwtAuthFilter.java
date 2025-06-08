@@ -18,6 +18,10 @@ import ru.hse.diplom.cafe_recommend_backend.service.JwtService;
 
 import java.io.IOException;
 
+import static ru.hse.diplom.cafe_recommend_backend.controller.AuthController.*;
+import static ru.hse.diplom.cafe_recommend_backend.controller.DishController.DISH_POINT;
+import static ru.hse.diplom.cafe_recommend_backend.controller.DishController.GET_ALL_DISHES_POINT;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -52,5 +56,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             log.error(request.getRequestURL() + " raised " + exception);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().equals(AUTH_POINT + REGISTER_POINT) ||
+                request.getServletPath().equals(AUTH_POINT + LOG_IN_POINT) ||
+                request.getServletPath().equals(AUTH_POINT + LOG_IN_ADMIN_POINT) ||
+                request.getServletPath().equals(AUTH_POINT + RESET_PASSWORD_POINT) ||
+                request.getServletPath().equals(AUTH_POINT + REFRESH_TOKEN_POINT) ||
+                request.getServletPath().equals(DISH_POINT + GET_ALL_DISHES_POINT);
     }
 }

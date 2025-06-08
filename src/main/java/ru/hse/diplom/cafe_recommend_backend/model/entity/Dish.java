@@ -1,13 +1,17 @@
 package ru.hse.diplom.cafe_recommend_backend.model.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ru.hse.diplom.cafe_recommend_backend.model.DishCategory;
 import ru.hse.diplom.cafe_recommend_backend.model.Season;
 
 import java.util.UUID;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
 @Getter

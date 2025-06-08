@@ -13,10 +13,10 @@ public interface IngredientRepository extends JpaRepository<Ingredient, UUID> {
 
     @Query(value = """
             SELECT i.* 
-            FROM ingredients i 
-            JOIN ref_dishes_ingredients ref 
+            FROM blues.ingredients i 
+            JOIN blues.ref_dishes_ingredients ref 
             ON ref.ingredient_id = i.id 
-            JOIN dishes d 
+            JOIN blues.dishes d 
             ON ref.dish_id = d.id 
             WHERE d.id = :dishId
             """, nativeQuery = true)
@@ -24,15 +24,15 @@ public interface IngredientRepository extends JpaRepository<Ingredient, UUID> {
 
     @Query(value = """
             SELECT DISTINCT i.id 
-            FROM ingredients i 
-            JOIN ref_dishes_ingredients ref 
+            FROM blues.ingredients i 
+            JOIN blues.ref_dishes_ingredients ref 
             ON ref.ingredient_id = i.id 
-            JOIN dishes d 
+            JOIN blues.dishes d 
             ON ref.dish_id = d.id 
             WHERE d.id in 
                 (SELECT oi.dishId 
-                FROM order_info oi 
-                JOIN orders o 
+                FROM blues.order_info oi 
+                JOIN blues.orders o 
                 ON o.id = oi.orderId 
                 WHERE o.userId = :userId)
             """, nativeQuery = true)
@@ -44,5 +44,12 @@ public interface IngredientRepository extends JpaRepository<Ingredient, UUID> {
             ORDER BY id
             """)
     List<UUID> findAllIds();
+
+    @Query("""
+            SELECT i 
+            FROM Ingredient i 
+            ORDER BY i.name
+            """)
+    List<Ingredient> findAllByNameOrder();
 
 }

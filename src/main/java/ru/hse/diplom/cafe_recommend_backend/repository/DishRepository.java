@@ -1,6 +1,7 @@
 package ru.hse.diplom.cafe_recommend_backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.DishPopularityDto;
@@ -33,8 +34,8 @@ public interface DishRepository extends JpaRepository<Dish, UUID> {
     List<DishPopularityDto> findPopular();
 
     @Query(value = """
-            SELECT i.* FROM ingredients i 
-            JOIN ref_dishes_ingredients ref 
+            SELECT i.* FROM blues.ingredients i 
+            JOIN blues.ref_dishes_ingredients ref 
             ON i.id = ref.ingredient_id 
             WHERE ref.dish_id = :dishId
             """, nativeQuery = true)
@@ -47,10 +48,17 @@ public interface DishRepository extends JpaRepository<Dish, UUID> {
             """)
     List<Dish> findByIds(List<UUID> ids);
 
-//    @Query("")
-//    List<> findDishesWithIngredientsByIds(List<UUID> ids);
+    @Modifying
+    @Query(value = """
+            INSERT INTO blues.ref_dishes_ingredients (id, dish_id, ingredient_id)
+            SELECT gen_random_uuid(), :dishId, unnest(:ingredientIds)
+            """, nativeQuery = true)
+    void saveAllDishIngredientRef(UUID dishId, UUID[] ingredientIds);
 
-    //    @Query("")
-//    List<> findAllDishesWithIngredients();
+    @Query("""
+            SELECT d FROM Dish d 
+            WHERE d.enabled = TRUE
+            """)
+    List<Dish> findAllEnabled();
 
 }

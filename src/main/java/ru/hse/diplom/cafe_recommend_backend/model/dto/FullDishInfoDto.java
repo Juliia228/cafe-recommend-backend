@@ -4,15 +4,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
-import lombok.Getter;
-import ru.hse.diplom.cafe_recommend_backend.model.DishCategory;
+import lombok.Data;
 import ru.hse.diplom.cafe_recommend_backend.model.Season;
 
 import java.util.List;
 import java.util.UUID;
 
 @Builder
-@Getter
+@Data
 public class FullDishInfoDto {
     @NotNull
     private UUID id;
@@ -24,7 +23,7 @@ public class FullDishInfoDto {
     @NotNull
     private boolean enabled;
     @NotNull
-    private DishCategory category;
+    private String category;
     @NotNull
     private Season season;
     private List<IngredientDto> ingredients;

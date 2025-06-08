@@ -9,16 +9,16 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public enum DishCategory {
-    SALADS_AND_COLD_APPETIZERS("салаты и холодные закуски"),
-    SANDWICHES("бутерброды"),
-    SOUPS("первые блюда"),
-    FISH_DISHES("блюда из рыбы"),
-    SHASHLIK("шашлык (весовой)"),
-    MEAT_DISHES("мясные блюда"),
-    SIDE_DISHES("гарнир"),
-    SAUCES("соусы"),
-    DESSERT("десерт"),
-    CAKE("торт");
+    SALADS_AND_COLD_APPETIZERS("Салаты и холодные закуски"),
+    SANDWICHES("Бутерброды"),
+    SOUPS("Первые блюда"),
+    FISH_DISHES("Блюда из рыбы"),
+    SHASHLIK("Шашлык (весовой)"),
+    MEAT_DISHES("Мясные блюда"),
+    SIDE_DISHES("Гарнир"),
+    SAUCES("Соусы"),
+    DESSERT("Десерт"),
+    CAKE("Торт");
 
     private String rusName;
 
@@ -28,5 +28,18 @@ public enum DishCategory {
             rusNames.add(category.rusName);
         }
         return rusNames;
+    }
+
+    public static DishCategory valueOfRusName(String rusName) {
+        for (DishCategory category: values()) {
+            if (category.rusName.equals(getCorrectRusName(rusName))) {
+                return category;
+            }
+        }
+        throw new RuntimeException(String.format("Category with name %s don't exist", rusName));
+    }
+
+    public static String getCorrectRusName(String rusName) {
+        return rusName.substring(0, 1).toUpperCase() + rusName.substring(1).toLowerCase();
     }
 }

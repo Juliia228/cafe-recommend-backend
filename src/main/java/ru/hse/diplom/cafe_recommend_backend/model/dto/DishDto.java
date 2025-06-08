@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Getter;
-import ru.hse.diplom.cafe_recommend_backend.model.DishCategory;
 import ru.hse.diplom.cafe_recommend_backend.model.Season;
 
 import java.util.UUID;
@@ -23,7 +22,7 @@ public class DishDto {
     @NotNull
     private boolean enabled;
     @NotNull
-    private DishCategory category;
+    private String category;
     @NotNull
     private Season season;
 }

@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.diplom.cafe_recommend_backend.model.dto.*;
-import ru.hse.diplom.cafe_recommend_backend.service.TokenGenerationService;
+import ru.hse.diplom.cafe_recommend_backend.service.AuthService;
 import ru.hse.diplom.cafe_recommend_backend.service.UserService;
 
 import java.util.UUID;
@@ -30,26 +30,26 @@ public class AuthController {
     public static final String REFRESH_TOKEN_POINT = "/refresh-token";
 
     private final UserService userService;
-    private final TokenGenerationService tokenGenerationService;
+    private final AuthService authService;
 
     @PostMapping(REGISTER_POINT)
     public ResponseEntity<UserDto> register(@Valid @RequestBody NewUserRequestDto new_user) {
         log.info(String.format("POST %s%s: Регистрация нового пользователя", AUTH_POINT, REGISTER_POINT));
-        return ResponseEntity.ok(userService.register(new_user));
+        return ResponseEntity.ok(authService.register(new_user));
     }
 
     @PostMapping(LOG_IN_POINT)
     public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto request) {
         String login = request.getLogin();
         log.info(String.format("POST %s%s: Аутентификация пользователя login = %s", AUTH_POINT, LOG_IN_POINT, login));
-        return ResponseEntity.ok(userService.authenticate(login, request.getPassword()));
+        return ResponseEntity.ok(authService.authenticate(login, request.getPassword()));
     }
 
     @PostMapping(LOG_IN_ADMIN_POINT)
     public ResponseEntity<AuthResponseDto> loginAdmin(@Valid @RequestBody AuthRequestDto request) {
         String login = request.getLogin();
         log.info(String.format("POST %s%s: Аутентификация администратора login = %s", AUTH_POINT, LOG_IN_ADMIN_POINT, login));
-        return ResponseEntity.ok(userService.authenticateAdmin(login, request.getPassword()));
+        return ResponseEntity.ok(authService.authenticateAdmin(login, request.getPassword()));
     }
 
     @PostMapping(RESET_PASSWORD_POINT)
@@ -62,7 +62,7 @@ public class AuthController {
     @PostMapping(REFRESH_TOKEN_POINT)
     public ResponseEntity<TokenResponseDto> refreshToken(@Valid @RequestBody RefreshTokenRequestDto request) {
         log.info(String.format("POST %s%s: Обновление access токена для пользователя с id = %s", AUTH_POINT, REFRESH_TOKEN_POINT, request.getUserId()));
-        return ResponseEntity.ok(tokenGenerationService.generateAccessToken(request.getToken()));
+        return ResponseEntity.ok(authService.generateAccessToken(request.getToken()));
     }
 
     @PostMapping(SET_ADMIN_POINT)

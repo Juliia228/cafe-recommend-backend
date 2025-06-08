@@ -54,9 +54,10 @@ public class DishController {
     }
 
     @GetMapping(GET_ALL_DISHES_POINT)
-    public ResponseEntity<DishListDto> getAllDishes(@RequestParam(defaultValue = "false") Boolean withIngredients) {
+    public ResponseEntity<DishListDto> getAllDishes(@RequestParam(defaultValue = "false") Boolean withIngredients,
+                                                    @RequestParam(defaultValue = "false") Boolean onlyEnabled) {
         log.info(String.format("GET %s%s: Получение всех блюд", DISH_POINT, GET_ALL_DISHES_POINT));
-        return ResponseEntity.ok(dishService.getAll(withIngredients));
+        return ResponseEntity.ok(dishService.getAll(withIngredients, onlyEnabled));
     }
 
     @GetMapping(GET_ALL_CATEGORIES_POINT)

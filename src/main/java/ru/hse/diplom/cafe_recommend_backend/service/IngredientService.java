@@ -11,10 +11,7 @@ import ru.hse.diplom.cafe_recommend_backend.model.dto.NewIngredientDto;
 import ru.hse.diplom.cafe_recommend_backend.model.entity.Ingredient;
 import ru.hse.diplom.cafe_recommend_backend.repository.IngredientRepository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 import static ru.hse.diplom.cafe_recommend_backend.model.Constants.INGREDIENT_DOES_NOT_EXIST;
 import static ru.hse.diplom.cafe_recommend_backend.service.Utils.getVector;
@@ -38,15 +35,23 @@ public class IngredientService {
     }
 
     public IngredientListDto getAll() {
-        List<Ingredient> ingredients = ingredientRepository.findAll();
+        List<Ingredient> ingredients = ingredientRepository.findAllByNameOrder();
         return IngredientListDto.of(IngredientService.mapToDto(ingredients));
     }
 
-    public IngredientDto add(NewIngredientDto dto) {
+    public IngredientListDto add(NewIngredientDto dto) {
         Ingredient ingredient = Ingredient.builder()
-                .name(dto.getName())
+                .name(dto.getName().toLowerCase())
                 .build();
-        return map(ingredientRepository.save(ingredient));
+        ingredientRepository.save(ingredient);
+        return getAll();
+    }
+
+    public List<Ingredient> add(List<Ingredient> ingredientList) {
+        if (ingredientList != null && !ingredientList.isEmpty()) {
+            return ingredientRepository.saveAll(ingredientList);
+        }
+        return List.of();
     }
 
     @Transactional

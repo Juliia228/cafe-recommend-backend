@@ -3,6 +3,7 @@ package ru.hse.diplom.cafe_recommend_backend.service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import static ru.hse.diplom.cafe_recommend_backend.service.Utils.getValueOfDefau
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DishService {
     private final DishRepository dishRepository;
     private final IngredientService ingredientService;
@@ -55,22 +57,38 @@ public class DishService {
                 .toList();
     }
 
-    public DishListDto getAll(Boolean withIngredients) {
-        if (withIngredients) {
-//            List<> dishesWithIngredients = dishRepository.findAllDishesWithIngredients();
-//            return DishListDto.of(map(dishesWithIngredients));
-        }
-        List<Dish> dishes = dishRepository.findAll();
-        return DishListDto.of(mapToFullDishInfoList(dishes));
-    }
+    public DishListDto getAll(Boolean withIngredients, Boolean onlyEnabled) {
+        withIngredients = getValueOfDefault(withIngredients, false);
+        onlyEnabled = getValueOfDefault(onlyEnabled, false);
 
-//    public CategoryListDto getAllCategories() {
-//        return CategoryListDto.of(
-//                Arrays.stream(DishCategory)
-//                        .map(Objects::toString)
-//                        .toList()
-//        );
-//    }
+        List<Dish> dishes;
+
+        if (onlyEnabled) {
+            dishes = dishRepository.findAllEnabled();
+        } else {
+            dishes = dishRepository.findAll();
+        }
+
+        if (withIngredients) {
+            return DishListDto.of(
+                    dishes.stream()
+                            .map(dish -> FullDishInfoDto.builder()
+                                    .id(dish.getId())
+                                    .name(dish.getName())
+                                    .description(dish.getDescription())
+                                    .price(dish.getPrice())
+                                    .enabled(dish.getEnabled())
+                                    .category(dish.getCategory().getRusName())
+                                    .season(dish.getSeason())
+                                    .ingredients(ingredientService.getIngredientsByDishId(dish.getId()).getIngredients())
+                                    .build()
+                            )
+                            .toList()
+            );
+        } else {
+            return DishListDto.of(mapToFullDishInfoList(dishes));
+        }
+    }
 
     @Transactional
     public Map<UUID, Integer> getRatedDishes(UUID userId) {
@@ -97,16 +115,22 @@ public class DishService {
         return new ArrayRealVector(dishesCount, 0);
     }
 
+    @Transactional
     public DishDto add(NewDishDto dto) {
         Dish dish = Dish.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .price(dto.getPrice())
-                .enabled(getValueOfDefault(dto.getEnabled(), false))
-                .category(DishCategory.valueOf(dto.getCategory().toLowerCase()))
+                .enabled(getValueOfDefault(dto.getEnabled(), true))
+                .category(DishCategory.valueOfRusName(dto.getCategory()))
                 .season(Season.valueOf(getValueOfDefault(dto.getSeason().toUpperCase(), Season.DEFAULT.name())))
                 .build();
-        return map(dishRepository.save(dish));
+        Dish savedDish = dishRepository.save(dish);
+        List<UUID> ingredientIds = dto.getIngredients().stream()
+                .map(IngredientDto::getId)
+                .toList();
+        dishRepository.saveAllDishIngredientRef(savedDish.getId(), ingredientIds.toArray(new UUID[0]));
+        return map(savedDish);
     }
 
     @Transactional
@@ -133,7 +157,7 @@ public class DishService {
                 .description(dish.getDescription())
                 .price(dish.getPrice())
                 .enabled(dish.getEnabled())
-                .category(dish.getCategory())
+                .category(dish.getCategory().getRusName())
                 .season(dish.getSeason())
                 .build();
     }
@@ -145,7 +169,7 @@ public class DishService {
                 .description(dish.getDescription())
                 .price(dish.getPrice())
                 .enabled(dish.isEnabled())
-                .category(dish.getCategory())
+                .category(DishCategory.valueOfRusName(dish.getCategory()))
                 .season(dish.getSeason())
                 .build();
     }
@@ -169,7 +193,7 @@ public class DishService {
                 .description(dish.getDescription())
                 .price(dish.getPrice())
                 .enabled(dish.getEnabled())
-                .category(dish.getCategory())
+                .category(dish.getCategory().getRusName())
                 .season(dish.getSeason())
                 .ingredients(ingredients == null || ingredients.isEmpty() ? List.of() : IngredientService.mapToDto(ingredients))
                 .build();

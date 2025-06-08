@@ -29,7 +29,7 @@ public class IngredientController {
     public static final String EDIT_INGREDIENT_POINT = "/edit";
     public static final String DELETE_INGREDIENT_POINT = "/delete";
 
-    private IngredientService ingredientService;
+    private final IngredientService ingredientService;
 
     @GetMapping(INGREDIENT_BY_ID_POINT)
     public ResponseEntity<IngredientDto> getIngredient(@PathVariable UUID ingredientId) {
@@ -44,7 +44,7 @@ public class IngredientController {
     }
 
     @PostMapping(NEW_INGREDIENT_POINT)
-    public ResponseEntity<IngredientDto> addIngredient(@Valid @RequestBody NewIngredientDto newIngredient) {
+    public ResponseEntity<IngredientListDto> addIngredient(@Valid @RequestBody NewIngredientDto newIngredient) {
         log.info(String.format("POST %s%s: Добавление нового ингредиента с name = %s", INGREDIENT_REST_POINT, NEW_INGREDIENT_POINT, newIngredient.getName()));
         return ResponseEntity.ok(ingredientService.add(newIngredient));
     }
